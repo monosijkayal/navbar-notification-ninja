@@ -2,15 +2,36 @@ import React, { useContext, useState } from "react";
 import { Link } from "react-router-dom";
 import { AppContext } from "../context/AppContext";
 import { InteractiveHoverButton } from "@/components/ui/interactive-hover-button";
-import { User, Bell } from 'lucide-react';
+import { User } from 'lucide-react';
+import { NotificationDropdown, Notification } from "./NotificationDropdown";
 
 const Navbar = () => {
   const { setShowLogin } = useContext(AppContext);
   const [showIcons, setShowIcons] = useState(false);
+  const [notifications, setNotifications] = useState<Notification[]>([
+    {
+      id: "1",
+      message: "Welcome to our platform!",
+      timestamp: new Date(),
+      read: false,
+    },
+    {
+      id: "2",
+      message: "Your profile was successfully updated",
+      timestamp: new Date(Date.now() - 3600000),
+      read: false,
+    },
+  ]);
+
+  const unreadCount = notifications.filter((n) => !n.read).length;
 
   const handleGetStarted = () => {
     setShowIcons(true);
     setShowLogin(true);
+  };
+
+  const handleMarkAllRead = () => {
+    setNotifications(notifications.map((n) => ({ ...n, read: true })));
   };
 
   return (
@@ -30,7 +51,11 @@ const Navbar = () => {
           <div className="flex items-center space-x-4">
             {showIcons ? (
               <div className="flex items-center gap-4">
-                <Bell className="h-6 w-6 text-gray-600 hover:text-gray-900 cursor-pointer" />
+                <NotificationDropdown
+                  notifications={notifications}
+                  unreadCount={unreadCount}
+                  onMarkAllRead={handleMarkAllRead}
+                />
                 <User className="h-6 w-6 text-gray-600 hover:text-gray-900 cursor-pointer" />
               </div>
             ) : (
